@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu</title>
+    <link rel="stylesheet" href="nav.css">
+
+</head>
+
+<body>
+
+    <nav id="nav">
+        <ul>
+
+            <!-- Menu tooggle on smaller screens  -->
+            <li id="toggleMenu" role="button" aria-haspopup="true">
+
+                <a href="/sitemap.html">
+                    <i aria-hidden="true" class="fa fa-bars"></i> <i aria-hidden="true" class="fa fa-times"></i>
+
+                    <!-- As icons are being used to represent open/close, 
+                        provide hidden text for screen readers -->
+                    <span id="toggleMenu-text">Toggle Navigation</span>
+
+                </a>
+            </li>
+
+            <!-- Simple menu item without sub menu -->
+            <li><a href="/">Level 1</a></li>
+
+            <!--  Menu item with one sub menu -->
+            <li>
+                <a href="/sitemap.html">Level 2</a>
+
+                <ul>
+                    <li><a href="/">Example Link</a></li>
+                    <li><a href="/">Example Link</a></li>
+                </ul>
+            </li>
+
+
+            <!--  Menu item with two levels of sub menu -->
+            <li>
+                <a href="/sitemap.html">Level 3</a>
+                <ul>
+                    <li><a href="/">Example Link</a></li>
+                    <li><a href="/">Example Link</a></li>
+
+                    <li>
+                        <a href="/">Example Link</a>
+                        <ul>
+                            <li><a href="/">Example Link</a></li>
+                            <li><a href="/">Example Link</a></li>
+                            <li><a href="/">Example Link</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+
+
+            <li><a href="/">Level 1</a></li>
+
+            <li>
+                <a href="/sitemap.html">Level 3</a>
+
+                <ul>
+                    <li><a href="/">Example Link</a></li>
+                    <li>
+                        <a href="/">Example Link</a>
+
+                        <ul>
+                            <li><a href="/">Example Link</a></li>
+                            <li><a href="/">Example Link</a></li>
+
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="/">Example Link</a>
+
+                        <ul>
+                            <li><a href="/">Example Link</a></li>
+                            <li><a href="/">Example Link</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="/">Example Link</a></li>
+                </ul>
+            </li>
+
+        </ul>
+    </nav>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.js"
+        integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
+
+    <script>
+
+        // Remove no-js class
+        $('html').removeClass('no-js');
+
+        $('#toggleMenu').on('click', function () {
+
+            if ($(this).hasClass('js-open')) {
+
+                $('#nav > ul > li:not(#toggleMenu)').removeClass('js-showElement');
+                $(this).removeClass('js-open');
+
+                $(this).attr('aria-expanded', false);
+
+            } else {
+
+                $('#nav > ul > li:not(#toggleMenu)').addClass('js-showElement');
+                $(this).addClass('js-open');
+
+                $(this).attr('aria-expanded', true);
+
+            }
+
+            return false;
+        })
+
+        // Add plus mark to li that have a sub menu
+        $('li:has("ul") > a').append('<span class="plusMark">+</span>');
+
+        // sub menu
+        // ------------------------
+
+        // When interacting with a li that has a sub menu
+        $('li:has("ul")').on('mouseover keyup click mouseleave', function (e) {
+
+            console.log("test")
+
+            // If either -
+            // tabbing into the li that has a sub menu
+            // hovering over the li that has a sub menu
+            if (e.keyCode === 9 | e.type === 'mouseover') {
+
+                // Show sub menu
+                $(this).children('ul').removeClass('js-hideElement');
+                $(this).children('ul').addClass('js-showElement');
+            }
+
+            // If mouse leaves li that has sub menu
+            if (e.type === 'mouseleave') {
+
+                // hide sub menu
+                $(this).children('ul').removeClass('js-showElement');
+                $(this).children('ul').addClass('js-hideElement');
+            }
+
+
+            // If clicking on li that has a sub menu
+            if (e.type === 'click') {
+
+                // If sub menu is already open
+                if ($(this).children('a').hasClass('js-openSubMenu')) {
+
+                    // remove Open class
+                    $(this).children('a').removeClass('js-openSubMenu');
+
+                    // Hide sub menu
+                    $(this).children('ul').removeClass('js-showElement');
+                    $(this).children('ul').addClass('js-hideElement');
+
+
+                    // If sub menu is closed
+                } else {
+
+                    // add Open class
+                    $(this).children('a').addClass('js-openSubMenu');
+
+                    // Show sub menu
+                    $(this).children('ul').removeClass('js-hideElement');
+                    $(this).children('ul').addClass('js-showElement');
+
+                }
+
+            } // end click event
+
+        });
+
+
+        // Tabbing through Levels of sub menu
+        // ------------------------
+
+        // If key is pressed while on the last link in a sub menu
+        $('li > ul > li:last-child > a').on('keydown', function (e) {
+
+
+            // If tabbing out of the last link in a sub menu AND not tabbing into another sub menu
+            if ((e.keyCode == 9) && $(this).parent('li').children('ul').length == 0) {
+
+                // Close this sub menu
+                $(this).parent('li').parent('ul').removeClass('js-showElement');
+                $(this).parent('li').parent('ul').addClass('js-hideElement');
+
+
+                // If tabbing out of a third level sub menu and there are no other links in the parent (level 2) sub menu
+                if ($(this).parent('li').parent('ul').parent('li').parent('ul').parent('li').children('ul').length > 0
+                    && $(this).parent('li').parent('ul').parent('li').is(':last-child')) {
+
+                    // Close the parent sub menu (level 2) as well
+                    $(this).parent('li').parent('ul').parent('li').parent('ul').removeClass('js-showElement');
+                    $(this).parent('li').parent('ul').parent('li').parent('ul').addClass('js-hideElement');
+                }
+
+            }
+
+        })
+    </script>
+
+</body>
+
+</html>
